@@ -35,7 +35,7 @@ function Dashboard() {
       <div className="dashboard-welcome">
 
         <h1>
-          Halo, Administrator 👋
+          Halo, AO'ER
         </h1>
 
         <p>
