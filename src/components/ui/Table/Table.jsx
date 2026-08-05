@@ -1,52 +1,119 @@
 import "./Table.css";
 
 function Table({
-  columns = [],
-  data = [],
-  emptyMessage = "Belum ada data.",
-}) {
-  return (
-    <div className="table-container">
-      <table className="custom-table">
 
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th key={column.accessor}>
-                {column.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
+    columns=[],
 
-        <tbody>
+    data=[],
 
-          {data.length === 0 ? (
-            <tr>
-              <td
-                colSpan={columns.length}
-                className="table-empty"
-              >
-                {emptyMessage}
-              </td>
-            </tr>
-          ) : (
-            data.map((row, index) => (
-              <tr key={index}>
-                {columns.map((column) => (
-                  <td key={column.accessor}>
-                    {row[column.accessor]}
-                  </td>
-                ))}
-              </tr>
-            ))
-          )}
+    emptyMessage="Belum ada data."
 
-        </tbody>
+}){
 
-      </table>
-    </div>
-  );
+    return(
+
+        <div className="table-wrapper">
+
+            <table className="table">
+
+                <thead>
+
+                    <tr>
+
+                        {
+
+                            columns.map((column,index)=>(
+
+                                <th key={index}>
+
+                                    {column.header}
+
+                                </th>
+
+                            ))
+
+                        }
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {
+
+                        data.length===0 ?
+
+                        (
+
+                            <tr>
+
+                                <td
+
+                                    className="table-empty"
+
+                                    colSpan={columns.length}
+
+                                >
+
+                                    {emptyMessage}
+
+                                </td>
+
+                            </tr>
+
+                        )
+
+                        :
+
+                        (
+
+                            data.map((row,index)=>(
+
+                                <tr key={index}>
+
+                                    {
+
+                                        columns.map((column,colIndex)=>(
+
+                                            <td key={colIndex}>
+
+                                                {
+
+                                                    typeof column.accessor==="function"
+
+                                                    ?
+
+                                                    column.accessor(row)
+
+                                                    :
+
+                                                    row[column.accessor]
+
+                                                }
+
+                                            </td>
+
+                                        ))
+
+                                    }
+
+                                </tr>
+
+                            ))
+
+                        )
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    )
+
 }
 
 export default Table;

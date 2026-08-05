@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
+import MasterBarang from "../pages/MasterBarang/MasterBarang";
 // import barang
 import ImportBarang from "../pages/ImportBarang/ImportBarang";
 
@@ -48,6 +49,17 @@ function AppRouter() {
       </MainLayout>
     </ProtectedRoute>
   }
+/>
+
+<Route
+    path="/master-barang"
+    element={
+        <ProtectedRoute>
+            <MainLayout title="Master Barang">
+                <MasterBarang/>
+            </MainLayout>
+        </ProtectedRoute>
+    }
 />
 
       </Routes>

@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Swal from "sweetalert2";
 
 import Card from "../../components/ui/Card/Card";
 import Button from "../../components/ui/Button/Button";
-import Input from "../../components/ui/Input/Input";
 import Table from "../../components/ui/Table/Table";
 
 import { readExcel } from "../../utils/excel";
 import barangService from "../../services/barangService";
 
+import "./ImportBarang.css";
+
 function ImportBarang() {
+  const inputRef = useRef(null);
+
   const [fileName, setFileName] = useState("");
   const [previewData, setPreviewData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,13 +41,8 @@ function ImportBarang() {
 
     try {
       const data = await readExcel(file);
-
-      console.log("EXCEL DATA :", data);
-
       setPreviewData(data);
-    } catch (err) {
-      console.error(err);
-
+    } catch {
       Swal.fire(
         "Error",
         "Gagal membaca file Excel.",
@@ -76,31 +74,16 @@ function ImportBarang() {
 
     setLoading(true);
 
-    console.log("================================");
-    console.log("PREVIEW DATA");
-    console.log(previewData);
-    console.log("================================");
-
-    const response = await barangService.importBarang(previewData);
-
-    console.log("================================");
-    console.log("SUPABASE RESPONSE");
-    console.log(response);
-    console.log("================================");
+    const { error } = await barangService.importBarang(previewData);
 
     setLoading(false);
 
-    const { data, error } = response;
-
     if (error) {
-      console.error(error);
-
       Swal.fire(
         "Error",
         error.message,
         "error"
       );
-
       return;
     }
 
@@ -109,47 +92,86 @@ function ImportBarang() {
       `${previewData.length} barang berhasil diimport.`,
       "success"
     );
+
+    setPreviewData([]);
+    setFileName("");
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
   };
 
   return (
     <>
       <Card title="Import Master Barang">
-        <Input
+
+        <input
+          ref={inputRef}
           type="file"
           accept=".xlsx,.xls"
+          hidden
           onChange={handleFile}
         />
 
-        <br />
-
-        <p>
-          <strong>File :</strong> {fileName || "-"}
-        </p>
-
-        <p>
-          <strong>Total Data :</strong> {previewData.length}
-        </p>
-
-        <br />
-
-        <Button
-          onClick={handleImport}
-          disabled={loading}
+        <div
+          className="upload-box"
+          onClick={() => inputRef.current.click()}
         >
-          {loading
-            ? "Mengimport..."
-            : "Import Barang"}
-        </Button>
+          <div className="upload-icon">
+            📄
+          </div>
+
+          <h3>Pilih File Excel</h3>
+
+          <p>
+            Klik untuk memilih file
+          </p>
+
+          <small>
+            Format .xlsx / .xls
+          </small>
+        </div>
+
+        {fileName && (
+          <div className="file-info">
+
+            <h4>{fileName}</h4>
+
+            <p>
+
+              {previewData.length} Barang ditemukan
+
+            </p>
+
+          </div>
+        )}
+
+        <div className="import-button">
+
+          <Button
+            onClick={handleImport}
+            disabled={loading}
+          >
+            {loading
+              ? "Mengimport..."
+              : "Import Barang"}
+          </Button>
+
+        </div>
+
       </Card>
 
       <br />
 
       <Card title="Preview Data">
+
         <Table
           columns={columns}
           data={previewData}
         />
+
       </Card>
+
     </>
   );
 }

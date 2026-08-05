@@ -15,6 +15,13 @@ const barangService = {
         onConflict: "plu",
       });
   },
+
+  async deleteBarang(id) {
+  return await supabase
+    .from("master_barang")
+    .delete()
+    .eq("id", id);
+  }
 };
 
 export default barangService;

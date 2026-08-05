@@ -1,0 +1,29 @@
+.page-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+
+}
+
+.page-header h1 {
+
+    font-size: 28px;
+
+    color: #2E7D32;
+
+    margin: 0;
+
+}
+
+.page-header p {
+
+    margin-top: 6px;
+
+    color: #777;
+
+}

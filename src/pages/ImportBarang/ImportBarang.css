@@ -1,0 +1,93 @@
+.upload-box {
+
+    border: 2px dashed #32CD32;
+
+    border-radius: 15px;
+
+    padding: 45px;
+
+    cursor: pointer;
+
+    text-align: center;
+
+    transition: .3s;
+
+    background: #FCFFFC;
+
+}
+
+.upload-box:hover {
+
+    background: #F4FFF4;
+
+    border-color: #28A428;
+
+}
+
+.upload-icon {
+
+    font-size: 60px;
+
+    margin-bottom: 10px;
+
+}
+
+.upload-box h3 {
+
+    margin: 10px 0;
+
+    color: #2E7D32;
+
+}
+
+.upload-box p {
+
+    margin: 5px 0;
+
+    color: #666;
+
+}
+
+.upload-box small {
+
+    color: #999;
+
+}
+
+.file-info {
+
+    margin-top: 25px;
+
+    padding: 18px;
+
+    background: #F8FFF8;
+
+    border-radius: 12px;
+
+    border-left: 5px solid #32CD32;
+
+}
+
+.file-info h4 {
+
+    margin: 0;
+
+}
+
+.file-info p {
+
+    margin-top: 6px;
+
+    color: #666;
+
+}
+
+.import-button {
+
+    margin-top: 25px;
+
+    display: flex;
+
+    justify-content: center;
+
+}
