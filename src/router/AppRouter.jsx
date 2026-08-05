@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import MasterBarang from "../pages/MasterBarang/MasterBarang";
+import StockOpname from "../pages/StockOpname/StockOpname";
 // import barang
 import ImportBarang from "../pages/ImportBarang/ImportBarang";
 
@@ -57,6 +58,17 @@ function AppRouter() {
         <ProtectedRoute>
             <MainLayout title="Master Barang">
                 <MasterBarang/>
+            </MainLayout>
+        </ProtectedRoute>
+    }
+/>
+
+<Route
+    path="/stock-opname"
+    element={
+        <ProtectedRoute>
+            <MainLayout title="Stock Opname">
+                <StockOpname/>
             </MainLayout>
         </ProtectedRoute>
     }

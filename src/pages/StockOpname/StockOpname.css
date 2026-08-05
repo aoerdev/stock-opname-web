@@ -1,0 +1,153 @@
+.detail-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 20px;
+
+}
+
+.detail-grid label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: 600;
+
+}
+
+.detail-grid input,
+
+.detail-grid textarea {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+}
+
+.full-width {
+
+    grid-column: 1 / -1;
+
+}
+
+.pilih-btn {
+
+    background: #22C55E;
+
+    color: white;
+
+    border: none;
+
+    padding: 8px 16px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+}
+
+.save-btn {
+
+    background: #2563EB;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 24px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+}
+
+.action-button {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+}
+
+.cancel-btn {
+
+    background: #EF4444;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 12px 24px;
+
+    cursor: pointer;
+
+}
+
+.cancel-btn:hover {
+
+    background: #DC2626;
+
+}
+
+.badge-success {
+
+    background: #DCFCE7;
+
+    color: #166534;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+.badge-secondary {
+
+    background: #F3F4F6;
+
+    color: #6B7280;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+.lihat-btn {
+
+    background: #10B981;
+
+    color: white;
+
+    border: none;
+
+    padding: 8px 16px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+}
