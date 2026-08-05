@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import PageHeader from "../../components/ui/PageHeader/PageHeader";
 import Card from "../../components/ui/Card/Card";
@@ -15,7 +15,9 @@ function StockOpname() {
     const { user } = useAuth();
 
     const [search, setSearch] = useState("");
+const [totalBarang, setTotalBarang] = useState(0);
 
+const [totalSO, setTotalSO] = useState(0);
     const [barang, setBarang] = useState([]);
     const [checkedBarang, setCheckedBarang] = useState([]);
 
@@ -24,6 +26,11 @@ function StockOpname() {
 const [qtyFisik, setQtyFisik] = useState("");
 
 const [catatan, setCatatan] = useState("");
+useEffect(() => {
+
+    loadProgress();
+
+}, []);
 
     async function handleSearch(value){
 
@@ -63,13 +70,15 @@ const hasil = await Promise.all(
 
         return {
 
-            ...item,
+    ...item,
 
-            checked:!!cek,
+    checked: !!cek,
 
-            qty_today:cek?.qty_fisik ?? null
+    qty_today: cek?.qty_fisik ?? "",
 
-        };
+    catatan_today: cek?.catatan ?? ""
+
+};
 
     })
 
@@ -151,6 +160,7 @@ console.log("DATA :", data);
         "Stock Opname berhasil disimpan.",
         "success"
     );
+await loadProgress();
 
     setQtyFisik("");
 
@@ -163,6 +173,21 @@ console.log("DATA :", data);
     setSearch("");
 
 }
+
+async function loadProgress(){
+
+    const tanggal = new Date().toISOString().slice(0,10);
+
+    const barang = await stockOpnameService.getTotalBarang();
+
+    const so = await stockOpnameService.getTotalSOHariIni(tanggal);
+
+    setTotalBarang(barang.count);
+
+    setTotalSO(so.count);
+
+}
+
     const columns = [
 
     {
@@ -219,7 +244,15 @@ console.log("DATA :", data);
 
     }
 
-    onClick={()=>setSelectedBarang(row)}
+  onClick={() => {
+
+    setSelectedBarang(row);
+
+    setQtyFisik(row.qty_today);
+
+    setCatatan(row.catatan_today);
+
+}}
 
 >
 
@@ -251,7 +284,9 @@ console.log("DATA :", data);
                 title="📦 Stock Opname"
                 subtitle="Cari barang berdasarkan PLU atau Nama Barang."
             />
+<p>Total Barang : {totalBarang}</p>
 
+<p>Sudah SO Hari Ini : {totalSO}</p> 
             <Card>
 
                 <SearchInput
@@ -363,7 +398,13 @@ console.log("DATA :", data);
         className="save-btn"
         onClick={handleSave}
     >
-        Simpan Stock Opname
+       {
+    selectedBarang?.checked
+
+        ? "Update Stock Opname"
+
+        : "Simpan Stock Opname"
+}
     </button>
 
 </div>

@@ -60,11 +60,34 @@ async checkToday(masterBarangId, userId, tanggal) {
 
     return await supabase
         .from("stock_opname")
-        .select("qty_fisik,created_at")
+        .select("*")
         .eq("master_barang_id", masterBarangId)
         .eq("user_id", userId)
         .eq("tanggal", tanggal)
         .maybeSingle();
+
+},
+async getTotalBarang() {
+
+    return await supabase
+        .from("master_barang")
+        .select("*", {
+            count: "exact",
+            head: true
+        })
+        .eq("aktif", true);
+
+},
+
+async getTotalSOHariIni(tanggal) {
+
+    return await supabase
+        .from("stock_opname")
+        .select("*", {
+            count: "exact",
+            head: true
+        })
+        .eq("tanggal", tanggal);
 
 },
 };
