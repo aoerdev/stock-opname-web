@@ -15,28 +15,28 @@ function StockOpname() {
     const { user } = useAuth();
 
     const [search, setSearch] = useState("");
-const [totalBarang, setTotalBarang] = useState(0);
+    const [totalBarang, setTotalBarang] = useState(0);
 
-const [totalSO, setTotalSO] = useState(0);
+    const [totalSO, setTotalSO] = useState(0);
     const [barang, setBarang] = useState([]);
     const [checkedBarang, setCheckedBarang] = useState([]);
 
     const [selectedBarang, setSelectedBarang] = useState(null);
 
-const [qtyFisik, setQtyFisik] = useState("");
+    const [qtyFisik, setQtyFisik] = useState("");
 
-const [catatan, setCatatan] = useState("");
-useEffect(() => {
+    const [catatan, setCatatan] = useState("");
+    useEffect(() => {
 
-    loadProgress();
+        loadProgress();
 
-}, []);
+    }, []);
 
-    async function handleSearch(value){
+    async function handleSearch(value) {
 
         setSearch(value);
 
-        if(value.length < 2){
+        if (value.length < 2) {
 
             setBarang([]);
 
@@ -46,7 +46,7 @@ useEffect(() => {
 
         const { data, error } = await stockOpnameService.searchBarang(value);
 
-        if(error){
+        if (error) {
 
             console.error(error);
 
@@ -54,229 +54,227 @@ useEffect(() => {
 
         }
 
-        const tanggal = new Date().toISOString().slice(0,10);
+        const tanggal = new Date().toISOString().slice(0, 10);
 
-const hasil = await Promise.all(
+        const hasil = await Promise.all(
 
-    data.map(async(item)=>{
+            data.map(async (item) => {
 
-        const { data:cek } = await stockOpnameService.checkToday(
+                const { data: cek } = await stockOpnameService.checkToday(
 
-            item.id,
-            user.id,
-            tanggal
+                    item.id,
+                    user.id,
+                    tanggal
+
+                );
+
+                return {
+
+                    ...item,
+
+                    checked: !!cek,
+
+                    qty_today: cek?.qty_fisik ?? "",
+
+                    catatan_today: cek?.catatan ?? ""
+
+                };
+
+            })
 
         );
 
-        return {
-
-    ...item,
-
-    checked: !!cek,
-
-    qty_today: cek?.qty_fisik ?? "",
-
-    catatan_today: cek?.catatan ?? ""
-
-};
-
-    })
-
-);
-
-setBarang(hasil);
+        setBarang(hasil);
 
     }
 
-    async function handleSave(){
+    async function handleSave() {
 
-    if(!selectedBarang){
+        if (!selectedBarang) {
+
+            Swal.fire(
+                "Peringatan",
+                "Pilih barang terlebih dahulu.",
+                "warning"
+            );
+
+            return;
+
+        }
+
+        if (qtyFisik === "") {
+
+            Swal.fire(
+                "Peringatan",
+                "Qty Fisik wajib diisi.",
+                "warning"
+            );
+
+            return;
+
+        }
+        if (!user) {
+
+            Swal.fire(
+                "Error",
+                "User login tidak ditemukan.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const data = {
+
+            master_barang_id: selectedBarang.id,
+
+            tanggal: new Date().toISOString().slice(0, 10),
+
+            qty_fisik: Number(qtyFisik),
+
+            catatan,
+
+            user_id: user.id
+
+        };
+
+        const { error } = await stockOpnameService.saveStockOpname(data);
+
+        if (error) {
+
+            Swal.fire(
+                "Error",
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
 
         Swal.fire(
-            "Peringatan",
-            "Pilih barang terlebih dahulu.",
-            "warning"
+            "Berhasil",
+            "Stock Opname berhasil disimpan.",
+            "success"
         );
+        await loadProgress();
 
-        return;
+        setQtyFisik("");
+
+        setCatatan("");
+
+        setSelectedBarang(null);
+
+        setBarang([]);
+
+        setSearch("");
 
     }
 
-    if(qtyFisik===""){
+    async function loadProgress() {
 
-        Swal.fire(
-            "Peringatan",
-            "Qty Fisik wajib diisi.",
-            "warning"
-        );
+        const tanggal = new Date().toISOString().slice(0, 10);
 
-        return;
+        const barang = await stockOpnameService.getTotalBarang();
 
-    }
-    if (!user) {
+        const so = await stockOpnameService.getTotalSOHariIni(tanggal);
 
-    Swal.fire(
-        "Error",
-        "User login tidak ditemukan.",
-        "error"
-    );
+        setTotalBarang(barang.count);
 
-    return;
-
-}
-
-    const data={
-
-        master_barang_id:selectedBarang.id,
-
-        tanggal:new Date().toISOString().slice(0,10),
-
-        qty_fisik:Number(qtyFisik),
-
-        catatan,
-
-        user_id:user.id
-
-    };
-
-    console.log("USER :", user);
-console.log("DATA :", data);
-    const {error}=await stockOpnameService.saveStockOpname(data);
-
-    if(error){
-
-        Swal.fire(
-            "Error",
-            error.message,
-            "error"
-        );
-
-        return;
+        setTotalSO(so.count);
 
     }
-
-    Swal.fire(
-        "Berhasil",
-        "Stock Opname berhasil disimpan.",
-        "success"
-    );
-await loadProgress();
-
-    setQtyFisik("");
-
-    setCatatan("");
-
-    setSelectedBarang(null);
-
-    setBarang([]);
-
-    setSearch("");
-
-}
-
-async function loadProgress(){
-
-    const tanggal = new Date().toISOString().slice(0,10);
-
-    const barang = await stockOpnameService.getTotalBarang();
-
-    const so = await stockOpnameService.getTotalSOHariIni(tanggal);
-
-    setTotalBarang(barang.count);
-
-    setTotalSO(so.count);
-
-}
 
     const columns = [
 
-    {
-        header:"PLU",
-        accessor:"plu"
-    },
+        {
+            header: "PLU",
+            accessor: "plu"
+        },
 
-    {
-        header:"Nama Barang",
-        accessor:"nama_barang"
-    },
+        {
+            header: "Nama Barang",
+            accessor: "nama_barang"
+        },
 
-   {
-    header:"Status",
-    accessor:(row)=>
+        {
+            header: "Status",
+            accessor: (row) =>
 
-        row.checked
+                row.checked
 
-        ?
+                    ?
 
-        <span className="badge-success">
+                    <span className="badge-success">
 
-            ✔ Sudah
+                        ✔ Sudah
 
-        </span>
+                    </span>
 
-        :
+                    :
 
-        <span className="badge-secondary">
+                    <span className="badge-secondary">
 
-            Belum
+                        Belum
 
-        </span>
+                    </span>
 
-},
+        },
 
-    {
-        header:"Aksi",
-        accessor:(row)=>(
+        {
+            header: "Aksi",
+            accessor: (row) => (
 
-          <button
+                <button
 
-    className={
+                    className={
 
-        row.checked
+                        row.checked
 
-        ?
+                            ?
 
-        "lihat-btn"
+                            "lihat-btn"
 
-        :
+                            :
 
-        "pilih-btn"
+                            "pilih-btn"
 
-    }
+                    }
 
-  onClick={() => {
+                    onClick={() => {
 
-    setSelectedBarang(row);
+                        setSelectedBarang(row);
 
-    setQtyFisik(row.qty_today);
+                        setQtyFisik(row.qty_today);
 
-    setCatatan(row.catatan_today);
+                        setCatatan(row.catatan_today);
 
-}}
+                    }}
 
->
+                >
 
-    {
+                    {
 
-        row.checked
+                        row.checked
 
-        ?
+                            ?
 
-        "Lihat"
+                            "Lihat"
 
-        :
+                            :
 
-        "Pilih"
+                            "Pilih"
 
-    }
+                    }
 
-</button>
-        )
-    }
+                </button>
+            )
+        }
 
-];
+    ];
 
-    return(
+    return (
 
         <>
 
@@ -284,148 +282,189 @@ async function loadProgress(){
                 title="📦 Stock Opname"
                 subtitle="Cari barang berdasarkan PLU atau Nama Barang."
             />
-<p>Total Barang : {totalBarang}</p>
 
-<p>Sudah SO Hari Ini : {totalSO}</p> 
+            <div className="progress-wrapper">
+
+                <div className="progress-card">
+
+                    <h4>✔ Sudah SO</h4>
+
+                    <h2>{totalSO}</h2>
+
+                    <span>PLU</span>
+
+                </div>
+
+                <div className="progress-card">
+
+                    <h4>📦 Total Barang</h4>
+
+                    <h2>{totalBarang}</h2>
+
+                    <span>PLU</span>
+
+                </div>
+
+            </div>
+
+            <div className="progress-bar-wrapper">
+
+                <div
+                    className="progress-bar"
+                    style={{
+                        width: `${totalBarang ? (totalSO / totalBarang) * 100 : 0}%`,
+                    }}
+                />
+
+            </div>
+
+            <p className="progress-text">
+
+                {totalSO} / {totalBarang} PLU
+
+            </p>
             <Card>
 
                 <SearchInput
                     placeholder="Cari PLU atau Nama Barang..."
                     value={search}
-                    onChange={(e)=>handleSearch(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value)}
                 />
 
             </Card>
 
-            <br/>
 
             <Card title="Hasil Pencarian">
-{
-    selectedBarang && (
+                {
+                    selectedBarang && (
 
-        <>
-            <br/>
+                        <>
 
-            <Card title="Input Stock Opname">
+                            <Card
+                                title={
+                                    selectedBarang?.checked
+                                        ? "Update Stock Opname"
+                                        : "Input Stock Opname"
+                                }
+                            >
 
-                <div className="detail-grid">
+                                <div className="detail-grid">
 
-                    <div>
+                                    <div>
 
-                        <label>PLU</label>
+                                        <label>PLU</label>
 
-                        <input
-                            value={selectedBarang.plu}
-                            disabled
+                                        <input
+                                            value={selectedBarang.plu}
+                                            disabled
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <label>Nama Barang</label>
+
+                                        <input
+                                            value={selectedBarang.nama_barang}
+                                            disabled
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <label>Lokasi</label>
+
+                                        <input
+                                            value={selectedBarang.lokasi ?? "-"}
+                                            disabled
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <label>Qty Fisik</label>
+
+                                        <input
+
+                                            type="number"
+
+                                            value={qtyFisik}
+
+                                            onChange={(e) => setQtyFisik(e.target.value)}
+
+                                        />
+
+                                    </div>
+
+                                    <div className="full-width">
+
+                                        <label>Catatan</label>
+
+                                        <textarea
+
+                                            rows="3"
+
+                                            value={catatan}
+
+                                            onChange={(e) => setCatatan(e.target.value)}
+
+                                        />
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="action-button">
+
+                                    <button
+                                        className="cancel-btn"
+                                        onClick={() => {
+
+                                            setSelectedBarang(null);
+                                            setQtyFisik("");
+                                            setCatatan("");
+
+                                        }}
+                                    >
+                                        Batal
+                                    </button>
+
+                                    <button
+                                        className="save-btn"
+                                        onClick={handleSave}
+                                    >
+                                        {
+                                            selectedBarang?.checked
+
+                                                ? "Update Stock Opname"
+
+                                                : "Simpan Stock Opname"
+                                        }
+                                    </button>
+
+                                </div>
+
+                            </Card>
+
+                        </>
+
+                    )
+                }
+                {
+                    !selectedBarang && (
+
+                        <Table
+                            columns={columns}
+                            data={barang}
+                            emptyMessage="Belum ada hasil pencarian."
                         />
 
-                    </div>
-
-                    <div>
-
-                        <label>Nama Barang</label>
-
-                        <input
-                            value={selectedBarang.nama_barang}
-                            disabled
-                        />
-
-                    </div>
-
-                    <div>
-
-                        <label>Lokasi</label>
-
-                        <input
-                            value={selectedBarang.lokasi ?? "-"}
-                            disabled
-                        />
-
-                    </div>
-
-                    <div>
-
-                        <label>Qty Fisik</label>
-
-                        <input
-
-                            type="number"
-
-                            value={qtyFisik}
-
-                            onChange={(e)=>setQtyFisik(e.target.value)}
-
-                        />
-
-                    </div>
-
-                    <div className="full-width">
-
-                        <label>Catatan</label>
-
-                        <textarea
-
-                            rows="3"
-
-                            value={catatan}
-
-                            onChange={(e)=>setCatatan(e.target.value)}
-
-                        />
-
-                    </div>
-
-                </div>
-
-                <br/>
-
-               <div className="action-button">
-
-    <button
-        className="cancel-btn"
-        onClick={() => {
-
-            setSelectedBarang(null);
-            setQtyFisik("");
-            setCatatan("");
-
-        }}
-    >
-        Batal
-    </button>
-
-    <button
-        className="save-btn"
-        onClick={handleSave}
-    >
-       {
-    selectedBarang?.checked
-
-        ? "Update Stock Opname"
-
-        : "Simpan Stock Opname"
-}
-    </button>
-
-</div>
-
-            </Card>
-
-        </>
-
-    )
-}
-             {
-    !selectedBarang && (
-
-        <Table
-            columns={columns}
-            data={barang}
-            emptyMessage="Belum ada hasil pencarian."
-        />
-
-    )
-}
+                    )
+                }
 
             </Card>
 

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import Export from "../pages/Export/Export";
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import MasterBarang from "../pages/MasterBarang/MasterBarang";
@@ -32,47 +32,57 @@ function AppRouter() {
         />
 
         <Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute>
-      <MainLayout title="Dashboard">
-        <Dashboard />
-      </MainLayout>
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/import-barang"
-  element={
-    <ProtectedRoute>
-      <MainLayout title="Import Barang">
-        <ImportBarang />
-      </MainLayout>
-    </ProtectedRoute>
-  }
-/>
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Dashboard">
+                <Dashboard />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/import-barang"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Import Barang">
+                <ImportBarang />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-    path="/master-barang"
-    element={
-        <ProtectedRoute>
-            <MainLayout title="Master Barang">
-                <MasterBarang/>
-            </MainLayout>
-        </ProtectedRoute>
-    }
-/>
+        <Route
+          path="/master-barang"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Master Barang">
+                <MasterBarang />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-    path="/stock-opname"
-    element={
-        <ProtectedRoute>
-            <MainLayout title="Stock Opname">
-                <StockOpname/>
-            </MainLayout>
-        </ProtectedRoute>
-    }
-/>
+        <Route
+          path="/stock-opname"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Stock Opname">
+                <StockOpname />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/export"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Export">
+                <Export />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
     </BrowserRouter>

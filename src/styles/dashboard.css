@@ -25,6 +25,39 @@
     margin-bottom: 30px;
 }
 
+.dashboard-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.filter-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-filter input[type="date"] {
+    padding: 10px 14px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.dashboard-filter button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.export-btn {
+    background: #16A34A;
+    color: white;
+}
+
 @media(max-width:1200px) {
 
     .stats-grid {

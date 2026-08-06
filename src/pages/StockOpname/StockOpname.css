@@ -151,3 +151,62 @@
     cursor: pointer;
 
 }
+
+/* =========================
+   Progress
+========================= */
+
+.progress-wrapper {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.progress-card {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+}
+
+.progress-card h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.progress-card h2 {
+    margin: 12px 0 4px;
+    font-size: 32px;
+    color: #111827;
+}
+
+.progress-card span {
+    font-size: 13px;
+    color: #9CA3AF;
+}
+
+.progress-bar-wrapper {
+    width: 100%;
+    height: 10px;
+    background: #E5E7EB;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #22C55E;
+    transition: width .3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}

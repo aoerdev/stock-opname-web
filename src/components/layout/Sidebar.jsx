@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Package,
@@ -8,6 +8,9 @@ import {
   Users,
   LogOut,
 } from "lucide-react";
+
+import useAuth from "../../hooks/useAuth";
+import authService from "../../services/authService";
 
 import "../../styles/sidebar.css";
 
@@ -48,16 +51,27 @@ const menus = [
     icon: Users,
     roles: ["admin"],
   },
-
-  
 ];
 
 function Sidebar() {
-  // sementara hardcode dulu
-  // nanti diganti:
-  // const { profile } = useAuth();
 
-  const role = "admin";
+  const navigate = useNavigate();
+
+  const { profile } = useAuth();
+
+  const role = profile?.role ?? "user";
+
+  async function handleLogout() {
+
+    const { error } = await authService.logout();
+
+    if (!error) {
+
+      navigate("/login");
+
+    }
+
+  }
 
   return (
     <aside className="sidebar">
@@ -82,7 +96,6 @@ function Sidebar() {
                 }
               >
                 <Icon size={20} />
-
                 <span>{menu.title}</span>
               </NavLink>
             );
@@ -90,7 +103,10 @@ function Sidebar() {
 
         <div className="sidebar-footer">
 
-          <button className="logout-btn">
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
 
             <LogOut size={20} />
 
