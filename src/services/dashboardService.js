@@ -61,6 +61,30 @@ const dashboardService = {
 
     return result;
 
+},
+async getHasilBanding(tanggal) {
+
+    return await supabase
+        .from("hasil_stock_opname")
+        .select(`
+            qty_system,
+            qty_fisik,
+            selisih,
+
+            profiles:profiles!hasil_stock_opname_user_fk(
+                nama,
+                username
+            ),
+
+            master_barang:master_barang!hasil_stock_opname_master_barang_fk(
+                plu,
+                nama_barang,
+                lokasi
+            )
+        `)
+        .eq("tanggal", tanggal)
+        .order("master_barang_id");
+
 }
 
 };

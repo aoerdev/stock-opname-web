@@ -30,6 +30,10 @@ function ImportBarang() {
       header: "Lokasi",
       accessor: "lokasi",
     },
+    {
+      header: "Qty System",
+      accessor: "qty_system",
+    },
   ];
 
   const handleFile = async (e) => {

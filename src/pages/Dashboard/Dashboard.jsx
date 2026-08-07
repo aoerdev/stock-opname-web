@@ -3,7 +3,8 @@ import Card from "../../components/ui/Card/Card";
 import StatCard from "../../components/ui/StatCard/StatCard";
 import Table from "../../components/ui/Table/Table";
 import dashboardService from "../../services/dashboardService";
-
+import bandingkanService from "../../services/bandingkanService";
+import Swal from "sweetalert2";
 import {
   Package,
   ClipboardCheck,
@@ -25,20 +26,23 @@ const columns = [
   },
 
   {
-    header: "Qty",
+    header: "Qty System",
+    accessor: "qty_system"
+  },
+
+  {
+    header: "Qty Fisik",
     accessor: "qty_fisik"
   },
 
   {
+    header: "Selisih",
+    accessor: "selisih"
+  },
+  {
     header: "Petugas",
     accessor: (row) => row.profiles?.nama
   },
-
-  {
-    header: "Jam",
-    accessor: (row) =>
-      new Date(row.created_at).toLocaleTimeString("id-ID")
-  }
 
 ];
 
@@ -61,8 +65,33 @@ function Dashboard() {
 
     loadDashboard();
 
-
   }, []);
+  async function prosesBanding() {
+
+    const { error } =
+      await bandingkanService.prosesBandingkan(tanggal);
+
+    if (error) {
+
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: error.message
+      });
+
+      return;
+
+    }
+
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil",
+      text: "Data berhasil dibandingkan."
+    });
+
+    loadDashboard();
+
+  }
   async function loadDashboard() {
 
 
@@ -75,11 +104,10 @@ function Dashboard() {
 
     const { data: users } =
       await dashboardService.getTotalPetugas(tanggal);
-    console.log("USERS :", users);
 
-    const { data: detail } =
-      await dashboardService.getRiwayat(tanggal);
 
+    const { data: detail, error } =
+      await dashboardService.getHasilBanding(tanggal);
     setTotalBarang(total);
 
     setSudahSO(so);
@@ -87,9 +115,7 @@ function Dashboard() {
     setPetugas(
       [...new Set(users.map(x => x.user_id))].length
     );
-
-    setRiwayat(detail);
-
+    setRiwayat(detail ?? []);
   }
   return (
     <>
@@ -153,12 +179,22 @@ function Dashboard() {
 
         </div>
 
-        <button className="export-btn">
-          Export Excel
-        </button>
+        <div style={{ display: "flex", gap: "10px" }}>
+
+          <button
+            onClick={prosesBanding}
+          >
+            Proses Bandingkan
+          </button>
+
+          <button className="export-btn">
+            Export Excel
+          </button>
+
+        </div>
 
       </div>
-      <Card title="Riwayat Input Hari Ini">
+      <Card title="Hasil Perbandingan">
 
         <Table
 

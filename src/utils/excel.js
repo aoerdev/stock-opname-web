@@ -16,12 +16,13 @@ export const readExcel = (file) => {
 
         const json = XLSX.utils.sheet_to_json(worksheet);
 
-        const data = json.map((row) => ({
-          plu: String(row.PLU ?? "").trim(),
-          nama_barang: String(row["Nama Barang"] ?? "").trim(),
-          lokasi: String(row.Lokasi ?? "").trim(),
-          aktif: true,
-        }));
+       const data = json.map((row) => ({
+  plu: String(row.PLU ?? "").trim(),
+  nama_barang: String(row["Nama Barang"] ?? "").trim(),
+  lokasi: String(row.Lokasi ?? "").trim(),
+  qty_system: Number(row["Qty System"] ?? 0),
+  aktif: true,
+}));
 
         resolve(data);
       } catch (error) {
