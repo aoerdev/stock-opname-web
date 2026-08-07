@@ -37,12 +37,33 @@ const columns = [
 
   {
     header: "Selisih",
-    accessor: "selisih"
+    render: (row) => (
+
+      <span
+        style={{
+          padding: "5px 12px",
+          borderRadius: "999px",
+          fontWeight: "bold",
+          backgroundColor:
+            row.selisih === 0
+              ? "#DCFCE7"
+              : "#FEE2E2",
+          color:
+            row.selisih === 0
+              ? "#166534"
+              : "#B91C1C"
+        }}
+      >
+        {row.selisih}
+      </span>
+
+    )
   },
+
   {
     header: "Petugas",
     accessor: (row) => row.profiles?.nama
-  },
+  }
 
 ];
 

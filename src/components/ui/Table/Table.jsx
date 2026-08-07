@@ -1,16 +1,12 @@
 import "./Table.css";
 
 function Table({
+    columns = [],
+    data = [],
+    emptyMessage = "Belum ada data."
+}) {
 
-    columns=[],
-
-    data=[],
-
-    emptyMessage="Belum ada data."
-
-}){
-
-    return(
+    return (
 
         <div className="table-wrapper">
 
@@ -21,17 +17,13 @@ function Table({
                     <tr>
 
                         {
-
-                            columns.map((column,index)=>(
+                            columns.map((column, index) => (
 
                                 <th key={index}>
-
                                     {column.header}
-
                                 </th>
 
                             ))
-
                         }
 
                     </tr>
@@ -41,68 +33,64 @@ function Table({
                 <tbody>
 
                     {
+                        data.length === 0
+                            ?
 
-                        data.length===0 ?
+                            (
+                                <tr>
 
-                        (
+                                    <td
+                                        className="table-empty"
+                                        colSpan={columns.length}
+                                    >
 
-                            <tr>
+                                        {emptyMessage}
 
-                                <td
-
-                                    className="table-empty"
-
-                                    colSpan={columns.length}
-
-                                >
-
-                                    {emptyMessage}
-
-                                </td>
-
-                            </tr>
-
-                        )
-
-                        :
-
-                        (
-
-                            data.map((row,index)=>(
-
-                                <tr key={index}>
-
-                                    {
-
-                                        columns.map((column,colIndex)=>(
-
-                                            <td key={colIndex}>
-
-                                                {
-
-                                                    typeof column.accessor==="function"
-
-                                                    ?
-
-                                                    column.accessor(row)
-
-                                                    :
-
-                                                    row[column.accessor]
-
-                                                }
-
-                                            </td>
-
-                                        ))
-
-                                    }
+                                    </td>
 
                                 </tr>
+                            )
 
-                            ))
+                            :
 
-                        )
+                            (
+                                data.map((row, index) => (
+
+                                    <tr key={index}>
+
+                                        {
+                                            columns.map((column, colIndex) => (
+
+                                                <td key={colIndex}>
+
+                                                    {
+                                                        column.render
+                                                            ?
+
+                                                            column.render(row)
+
+                                                            :
+
+                                                            typeof column.accessor === "function"
+
+                                                                ?
+
+                                                                column.accessor(row)
+
+                                                                :
+
+                                                                row[column.accessor]
+                                                    }
+
+                                                </td>
+
+                                            ))
+                                        }
+
+                                    </tr>
+
+                                ))
+                            )
 
                     }
 
@@ -112,7 +100,7 @@ function Table({
 
         </div>
 
-    )
+    );
 
 }
 
