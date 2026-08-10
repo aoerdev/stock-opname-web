@@ -14,42 +14,74 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   async function handleLogin(e) {
+
     e.preventDefault();
 
+
     if (!username.trim()) {
+
       Swal.fire({
         icon: "warning",
         title: "Peringatan",
         text: "Username wajib diisi.",
       });
+
       return;
+
     }
 
+
     if (!password.trim()) {
+
       Swal.fire({
         icon: "warning",
         title: "Peringatan",
         text: "Password wajib diisi.",
       });
+
       return;
+
     }
 
+
     try {
+
       setLoading(true);
 
-      const { error } = await authService.loginByUsername(
-        username,
-        password
+
+      const result =
+        await authService.loginByUsername(
+          username,
+          password
+        );
+
+
+      console.log(
+        "LOGIN FINAL RESULT:",
+        result
       );
 
-      if (error) {
+
+      if (result.error) {
+
+        console.error(
+          "LOGIN FINAL ERROR:",
+          result.error
+        );
+
+
         Swal.fire({
           icon: "error",
           title: "Login Gagal",
-          text: "Username atau Password salah.",
+          text:
+            result.error.message ||
+            "Username atau Password salah.",
         });
+
         return;
+
       }
+
 
       Swal.fire({
         icon: "success",
@@ -58,16 +90,31 @@ function Login() {
         showConfirmButton: false,
       });
 
+
       navigate("/dashboard");
+
+
     } catch (err) {
+
+      console.error(
+        "LOGIN EXCEPTION:",
+        err
+      );
+
+
       Swal.fire({
         icon: "error",
         title: "Error",
         text: err.message,
       });
+
+
     } finally {
+
       setLoading(false);
+
     }
+
   }
 
   return (
