@@ -35,11 +35,11 @@ const dashboardService = {
 
     },
 
-   async getRiwayat(tanggal) {
+    async getRiwayat(tanggal) {
 
-    const result = await supabase
-        .from("stock_opname")
-        .select(`
+        const result = await supabase
+            .from("stock_opname")
+            .select(`
             qty_fisik,
             created_at,
             user_id,
@@ -52,21 +52,65 @@ const dashboardService = {
                 nama_barang
             )
         `)
-        .eq("tanggal", tanggal)
-        .order("created_at", {
-            ascending: false
-        });
+            .eq("tanggal", tanggal)
+            .order("created_at", {
+                ascending: false
+            });
 
-    console.log(result.data);
+        console.log(result.data);
 
-    return result;
+        return result;
 
-},
-async getHasilBanding(tanggal) {
+    },
+    async getSOUser(tanggal) {
 
-    return await supabase
-        .from("hasil_stock_opname")
-        .select(`
+        const {
+            data: { user },
+            error: userError
+        } = await supabase.auth.getUser();
+
+
+        if (userError || !user) {
+
+            return {
+                data: [],
+                error: userError || {
+                    message: "User tidak ditemukan."
+                }
+            };
+
+        }
+
+
+        return await supabase
+            .from("stock_opname")
+            .select(`
+            qty_fisik,
+            tanggal,
+            created_at,
+
+            profiles:profiles!stock_opname_user_id_fkey(
+                nama,
+                username
+            ),
+
+            master_barang:master_barang!stock_opname_master_barang_id_fkey(
+                plu,
+                nama_barang
+            )
+        `)
+            .eq("tanggal", tanggal)
+            .eq("user_id", user.id)
+            .order("created_at", {
+                ascending: true
+            });
+
+    },
+    async getHasilBanding(tanggal) {
+
+        return await supabase
+            .from("hasil_stock_opname")
+            .select(`
             qty_system,
             qty_fisik,
             selisih,
@@ -82,10 +126,10 @@ async getHasilBanding(tanggal) {
                 lokasi
             )
         `)
-        .eq("tanggal", tanggal)
-        .order("master_barang_id");
+            .eq("tanggal", tanggal)
+            .order("master_barang_id");
 
-}
+    }
 
 };
 

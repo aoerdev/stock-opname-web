@@ -2,12 +2,15 @@ import { useContext, useEffect, useState } from "react";
 import Card from "../../components/ui/Card/Card";
 import StatCard from "../../components/ui/StatCard/StatCard";
 import Table from "../../components/ui/Table/Table";
+
 import dashboardService from "../../services/dashboardService";
 import bandingkanService from "../../services/bandingkanService";
 import exportService from "../../services/exportService";
+
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+
 import { AuthContext } from "../../context/AuthContext";
 
 import {
@@ -20,116 +23,10 @@ import {
 import "../../styles/dashboard.css";
 
 
-const columns = [
-
-  {
-    header: "PLU",
-    accessor: (row) => row.master_barang?.plu
-  },
-
-  {
-    header: "Nama Barang",
-    accessor: (row) => row.master_barang?.nama_barang
-  },
-
-  {
-    header: "Qty System",
-    accessor: "qty_system"
-  },
-
-  {
-    header: "Qty Fisik",
-    accessor: "qty_fisik"
-  },
-
-  {
-    header: "Selisih",
-    render: (row) => (
-
-      <span
-        style={{
-          padding: "5px 12px",
-          borderRadius: "999px",
-          fontWeight: "bold",
-          backgroundColor:
-            row.selisih === 0
-              ? "#DCFCE7"
-              : "#FEE2E2",
-          color:
-            row.selisih === 0
-              ? "#166534"
-              : "#B91C1C"
-        }}
-      >
-        {row.selisih}
-      </span>
-
-    )
-  },
-
-  {
-    header: "Petugas",
-    accessor: (row) => row.profiles?.nama
-  }
-
-];
-
-
 function Dashboard() {
+
   const { profile } = useContext(AuthContext);
-  const columns = [
-    {
-      header: "PLU",
-      accessor: (row) => row.master_barang?.plu
-    },
 
-    {
-      header: "Nama Barang",
-      accessor: (row) => row.master_barang?.nama_barang
-    },
-
-    ...(profile?.role === "admin"
-      ? [
-        {
-          header: "Qty System",
-          accessor: "qty_system"
-        },
-
-        {
-          header: "Selisih",
-          render: (row) => (
-            <span
-              style={{
-                padding: "5px 12px",
-                borderRadius: "999px",
-                fontWeight: "bold",
-                backgroundColor:
-                  row.selisih === 0
-                    ? "#DCFCE7"
-                    : "#FEE2E2",
-                color:
-                  row.selisih === 0
-                    ? "#166534"
-                    : "#B91C1C"
-              }}
-            >
-              {row.selisih}
-            </span>
-          )
-        }
-      ]
-      : []),
-
-    {
-      header: "Qty Fisik",
-      accessor: "qty_fisik"
-    },
-
-    {
-      header: "Petugas",
-      accessor: (row) => row.profiles?.nama
-    }
-  ];
 
   const [totalBarang, setTotalBarang] = useState(0);
 
@@ -144,17 +41,112 @@ function Dashboard() {
   );
 
 
+  // ==============================
+  // COLUMN TABLE
+  // ==============================
+
+  const columns = [
+
+    {
+      header: "PLU",
+      accessor: (row) =>
+        row.master_barang?.plu
+    },
+
+
+    {
+      header: "Nama Barang",
+      accessor: (row) =>
+        row.master_barang?.nama_barang
+    },
+
+
+    // ADMIN SAJA
+    ...(profile?.role === "admin"
+      ? [
+
+        {
+          header: "Qty System",
+          accessor: "qty_system"
+        },
+
+
+        {
+          header: "Selisih",
+
+          render: (row) => (
+
+            <span
+              style={{
+                padding: "5px 12px",
+                borderRadius: "999px",
+                fontWeight: "bold",
+
+                backgroundColor:
+                  row.selisih === 0
+                    ? "#DCFCE7"
+                    : "#FEE2E2",
+
+                color:
+                  row.selisih === 0
+                    ? "#166534"
+                    : "#B91C1C"
+              }}
+            >
+              {row.selisih}
+            </span>
+
+          )
+        }
+
+      ]
+      : []),
+
+
+    {
+      header: "Qty Fisik",
+      accessor: "qty_fisik"
+    },
+
+
+    {
+      header: "Petugas",
+      accessor: (row) =>
+        row.profiles?.nama
+    }
+
+  ];
+
+
+  // ==============================
+  // LOAD AWAL
+  // ==============================
+
   useEffect(() => {
 
-    loadDashboard();
+    if (profile) {
+      loadDashboard();
+    }
 
-  }, []);
+  }, [profile]);
 
+
+  // ==============================
+  // PROSES BANDINGKAN
+  // ADMIN ONLY
+  // ==============================
 
   async function prosesBanding() {
 
+    if (profile?.role !== "admin") {
+      return;
+    }
+
+
     const { error } =
-      await bandingkanService.prosesBandingkan(tanggal);
+      await bandingkanService.prosesBandingkan(
+        tanggal
+      );
 
 
     if (error) {
@@ -182,10 +174,22 @@ function Dashboard() {
   }
 
 
+  // ==============================
+  // EXPORT
+  // ADMIN ONLY
+  // ==============================
+
   async function handleExport() {
 
+    if (profile?.role !== "admin") {
+      return;
+    }
+
+
     const { data, error } =
-      await exportService.getExportData(tanggal);
+      await exportService.getExportData(
+        tanggal
+      );
 
 
     if (error) {
@@ -206,7 +210,8 @@ function Dashboard() {
       Swal.fire({
         icon: "warning",
         title: "Tidak Ada Data",
-        text: `Belum ada hasil perbandingan untuk tanggal ${tanggal}.`
+        text:
+          `Belum ada hasil perbandingan untuk tanggal ${tanggal}.`
       });
 
       return;
@@ -214,38 +219,43 @@ function Dashboard() {
     }
 
 
-    const excelData = data.map((item, index) => ({
+    const excelData = data.map(
+      (item, index) => ({
 
-      No: index + 1,
+        No: index + 1,
 
-      PLU: item.master_barang?.plu,
+        PLU:
+          item.master_barang?.plu,
 
-      "Nama Barang":
-        item.master_barang?.nama_barang,
+        "Nama Barang":
+          item.master_barang?.nama_barang,
 
-      Lokasi:
-        item.master_barang?.lokasi,
+        Lokasi:
+          item.master_barang?.lokasi,
 
-      "Qty System":
-        item.qty_system,
+        "Qty System":
+          item.qty_system,
 
-      "Qty Fisik":
-        item.qty_fisik,
+        "Qty Fisik":
+          item.qty_fisik,
 
-      Selisih:
-        item.selisih,
+        Selisih:
+          item.selisih,
 
-      Petugas:
-        item.profiles?.nama,
+        Petugas:
+          item.profiles?.nama,
 
-      Tanggal:
-        item.tanggal
+        Tanggal:
+          item.tanggal
 
-    }));
+      })
+    );
 
 
     const worksheet =
-      XLSX.utils.json_to_sheet(excelData);
+      XLSX.utils.json_to_sheet(
+        excelData
+      );
 
 
     const workbook =
@@ -287,6 +297,10 @@ function Dashboard() {
   }
 
 
+  // ==============================
+  // LOAD DASHBOARD
+  // ==============================
+
   async function loadDashboard() {
 
     const { count: total } =
@@ -294,30 +308,101 @@ function Dashboard() {
 
 
     const { count: so } =
-      await dashboardService.getSudahSO(tanggal);
+      await dashboardService.getSudahSO(
+        tanggal
+      );
 
 
     const { data: users } =
-      await dashboardService.getTotalPetugas(tanggal);
+      await dashboardService.getTotalPetugas(
+        tanggal
+      );
 
 
-    const { data: detail, error } =
-      await dashboardService.getHasilBanding(tanggal);
+    setTotalBarang(total ?? 0);
 
 
-    setTotalBarang(total);
-
-    setSudahSO(so);
+    setSudahSO(so ?? 0);
 
 
     setPetugas(
-      [...new Set(
-        (users ?? []).map(x => x.user_id)
-      )].length
+      [
+        ...new Set(
+          (users ?? []).map(
+            x => x.user_id
+          )
+        )
+      ].length
     );
 
 
-    setRiwayat(detail ?? []);
+    // ==========================
+    // ADMIN
+    // ==========================
+
+    if (profile?.role === "admin") {
+
+      const {
+        data: detail,
+        error
+      } =
+        await dashboardService.getHasilBanding(
+          tanggal
+        );
+
+
+      if (error) {
+
+        console.error(
+          "ERROR HASIL BANDING:",
+          error
+        );
+
+        setRiwayat([]);
+
+        return;
+
+      }
+
+
+      setRiwayat(
+        detail ?? []
+      );
+
+      return;
+    }
+
+
+    // ==========================
+    // USER
+    // ==========================
+
+    const {
+      data: detailUser,
+      error: errorUser
+    } =
+      await dashboardService.getSOUser(
+        tanggal
+      );
+
+
+    if (errorUser) {
+
+      console.error(
+        "ERROR SO USER:",
+        errorUser
+      );
+
+      setRiwayat([]);
+
+      return;
+
+    }
+
+
+    setRiwayat(
+      detailUser ?? []
+    );
 
   }
 
@@ -358,7 +443,9 @@ function Dashboard() {
 
         <StatCard
           title="Belum Input"
-          value={totalBarang - sudahSO}
+          value={
+            totalBarang - sudahSO
+          }
           variant="warning"
           icon={<Clock3 size={20} />}
         />
@@ -382,11 +469,16 @@ function Dashboard() {
             type="date"
             value={tanggal}
             onChange={(e) =>
-              setTanggal(e.target.value)
+              setTanggal(
+                e.target.value
+              )
             }
           />
 
-          <button onClick={loadDashboard}>
+
+          <button
+            onClick={loadDashboard}
+          >
             Tampilkan
           </button>
 
@@ -423,7 +515,13 @@ function Dashboard() {
       </div>
 
 
-      <Card title="Hasil Perbandingan">
+      <Card
+        title={
+          profile?.role === "admin"
+            ? "Hasil Perbandingan"
+            : "Barang yang Sudah Di-SO"
+        }
+      >
 
         <Table
           columns={columns}
