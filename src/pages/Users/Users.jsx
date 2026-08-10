@@ -11,48 +11,7 @@ import Swal from "sweetalert2";
 import "./Users.css";
 
 
-const columns = [
 
-    {
-        header: "Username",
-        accessor: "username"
-    },
-
-    {
-        header: "Nama",
-        accessor: "nama"
-    },
-
-    {
-        header: "Role",
-        accessor: "role"
-    },
-
-    {
-        header: "Status",
-        render: (row) => (
-
-            <span
-                className={
-                    row.aktif
-                        ? "user-status aktif"
-                        : "user-status nonaktif"
-                }
-            >
-                {row.aktif ? "Aktif" : "Nonaktif"}
-            </span>
-
-        )
-    },
-
-    {
-        header: "Dibuat",
-        render: (row) =>
-            new Date(row.created_at)
-                .toLocaleDateString("id-ID")
-    }
-
-];
 
 
 function Users() {
@@ -311,6 +270,219 @@ function Users() {
         loadUsers();
 
     }
+
+    async function handleDelete(user) {
+
+        const result = await Swal.fire({
+
+            icon: "warning",
+
+            title: "Hapus User?",
+
+            text: `User "${user.username}" akan dihapus permanen.`,
+
+            showCancelButton: true,
+
+            confirmButtonText: "Ya, Hapus",
+
+            cancelButtonText: "Batal",
+
+            reverseButtons: true
+
+        });
+
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+
+        try {
+
+            setSaving(true);
+
+
+            const { data, error } =
+                await userService.deleteUser(
+                    user.id
+                );
+
+
+            console.log(
+                "DELETE USER DATA:",
+                data
+            );
+
+            console.log(
+                "DELETE USER ERROR:",
+                error
+            );
+
+
+            if (error) {
+
+                let detail =
+                    error.message ||
+                    "Gagal menghapus user.";
+
+
+                try {
+
+                    if (error.context) {
+
+                        const response =
+                            await error.context.json();
+
+                        console.error(
+                            "DELETE EDGE RESPONSE:",
+                            response
+                        );
+
+                        detail =
+                            response.error ||
+                            detail;
+
+                    }
+
+                } catch (e) {
+
+                    console.error(
+                        "GAGAL BACA DELETE RESPONSE:",
+                        e
+                    );
+
+                }
+
+
+                Swal.fire({
+
+                    icon: "error",
+
+                    title: "Gagal",
+
+                    text: detail
+
+                });
+
+                return;
+
+            }
+
+
+            if (data?.error) {
+
+                Swal.fire({
+
+                    icon: "error",
+
+                    title: "Gagal",
+
+                    text: data.error
+
+                });
+
+                return;
+
+            }
+
+
+            await Swal.fire({
+
+                icon: "success",
+
+                title: "Berhasil",
+
+                text: "User berhasil dihapus.",
+
+                timer: 1200,
+
+                showConfirmButton: false
+
+            });
+
+
+            loadUsers();
+
+
+        } catch (err) {
+
+            console.error(
+                "DELETE USER EXCEPTION:",
+                err
+            );
+
+
+            Swal.fire({
+
+                icon: "error",
+
+                title: "Error",
+
+                text: err.message
+
+            });
+
+
+        } finally {
+
+            setSaving(false);
+
+        }
+
+    }
+    const columns = [
+
+        {
+            header: "Username",
+            accessor: "username"
+        },
+
+        {
+            header: "Nama",
+            accessor: "nama"
+        },
+
+        {
+            header: "Role",
+            accessor: "role"
+        },
+
+        {
+            header: "Status",
+            render: (row) => (
+
+                <span
+                    className={
+                        row.aktif
+                            ? "user-status aktif"
+                            : "user-status nonaktif"
+                    }
+                >
+                    {row.aktif ? "Aktif" : "Nonaktif"}
+                </span>
+
+            )
+        },
+
+        {
+            header: "Dibuat",
+            render: (row) =>
+                new Date(row.created_at)
+                    .toLocaleDateString("id-ID")
+        },
+        {
+            header: "Aksi",
+            render: (row) => (
+                <button
+                    className="delete-user-btn"
+                    onClick={() => handleDelete(row)}
+                >
+                    Hapus
+                </button>
+            )
+        }
+
+    ];
 
 
     return (

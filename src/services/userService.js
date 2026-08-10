@@ -30,6 +30,20 @@ const userService = {
             }
         );
 
+    },
+
+
+    async deleteUser(userId) {
+
+        return await supabase.functions.invoke(
+            "delete-user",
+            {
+                body: {
+                    user_id: userId
+                }
+            }
+        );
+
     }
 
 };
