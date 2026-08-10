@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Card from "../../components/ui/Card/Card";
 import StatCard from "../../components/ui/StatCard/StatCard";
 import Table from "../../components/ui/Table/Table";
@@ -8,6 +8,7 @@ import exportService from "../../services/exportService";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { AuthContext } from "../../context/AuthContext";
 
 import {
   Package,
@@ -75,6 +76,60 @@ const columns = [
 
 
 function Dashboard() {
+  const { profile } = useContext(AuthContext);
+  const columns = [
+    {
+      header: "PLU",
+      accessor: (row) => row.master_barang?.plu
+    },
+
+    {
+      header: "Nama Barang",
+      accessor: (row) => row.master_barang?.nama_barang
+    },
+
+    ...(profile?.role === "admin"
+      ? [
+        {
+          header: "Qty System",
+          accessor: "qty_system"
+        },
+
+        {
+          header: "Selisih",
+          render: (row) => (
+            <span
+              style={{
+                padding: "5px 12px",
+                borderRadius: "999px",
+                fontWeight: "bold",
+                backgroundColor:
+                  row.selisih === 0
+                    ? "#DCFCE7"
+                    : "#FEE2E2",
+                color:
+                  row.selisih === 0
+                    ? "#166534"
+                    : "#B91C1C"
+              }}
+            >
+              {row.selisih}
+            </span>
+          )
+        }
+      ]
+      : []),
+
+    {
+      header: "Qty Fisik",
+      accessor: "qty_fisik"
+    },
+
+    {
+      header: "Petugas",
+      accessor: (row) => row.profiles?.nama
+    }
+  ];
 
   const [totalBarang, setTotalBarang] = useState(0);
 
@@ -331,7 +386,6 @@ function Dashboard() {
             }
           />
 
-
           <button onClick={loadDashboard}>
             Tampilkan
           </button>
@@ -339,28 +393,32 @@ function Dashboard() {
         </div>
 
 
-        <div
-          style={{
-            display: "flex",
-            gap: "10px"
-          }}
-        >
+        {profile?.role === "admin" && (
 
-          <button
-            onClick={prosesBanding}
+          <div
+            style={{
+              display: "flex",
+              gap: "10px"
+            }}
           >
-            Proses Bandingkan
-          </button>
+
+            <button
+              onClick={prosesBanding}
+            >
+              Proses Bandingkan
+            </button>
 
 
-          <button
-            className="export-btn"
-            onClick={handleExport}
-          >
-            Export Excel
-          </button>
+            <button
+              className="export-btn"
+              onClick={handleExport}
+            >
+              Export Excel
+            </button>
 
-        </div>
+          </div>
+
+        )}
 
       </div>
 
