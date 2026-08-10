@@ -5,23 +5,26 @@ const exportService = {
     async getExportData(tanggal) {
 
         return await supabase
-            .from("stock_opname")
+            .from("hasil_stock_opname")
             .select(`
-                qty_fisik,
                 tanggal,
-                catatan,
-                created_at,
-                profiles(
+                qty_system,
+                qty_fisik,
+                selisih,
+                user_id,
+
+                profiles:profiles!hasil_stock_opname_user_fk(
                     nama
                 ),
-                master_barang(
+
+                master_barang:master_barang!hasil_stock_opname_master_barang_fk(
                     plu,
                     nama_barang,
                     lokasi
                 )
             `)
             .eq("tanggal", tanggal)
-            .order("created_at", {
+            .order("master_barang_id", {
                 ascending: true
             });
 

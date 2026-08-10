@@ -4,7 +4,11 @@ import StatCard from "../../components/ui/StatCard/StatCard";
 import Table from "../../components/ui/Table/Table";
 import dashboardService from "../../services/dashboardService";
 import bandingkanService from "../../services/bandingkanService";
+import exportService from "../../services/exportService";
 import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 import {
   Package,
   ClipboardCheck,
@@ -13,6 +17,8 @@ import {
 } from "lucide-react";
 
 import "../../styles/dashboard.css";
+
+
 const columns = [
 
   {
@@ -67,9 +73,9 @@ const columns = [
 
 ];
 
-const data = [];
 
 function Dashboard() {
+
   const [totalBarang, setTotalBarang] = useState(0);
 
   const [sudahSO, setSudahSO] = useState(0);
@@ -82,15 +88,19 @@ function Dashboard() {
     new Date().toISOString().slice(0, 10)
   );
 
+
   useEffect(() => {
 
     loadDashboard();
 
   }, []);
+
+
   async function prosesBanding() {
 
     const { error } =
       await bandingkanService.prosesBandingkan(tanggal);
+
 
     if (error) {
 
@@ -104,24 +114,133 @@ function Dashboard() {
 
     }
 
+
     Swal.fire({
       icon: "success",
       title: "Berhasil",
       text: "Data berhasil dibandingkan."
     });
 
+
     loadDashboard();
 
   }
+
+
+  async function handleExport() {
+
+    const { data, error } =
+      await exportService.getExportData(tanggal);
+
+
+    if (error) {
+
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: error.message
+      });
+
+      return;
+
+    }
+
+
+    if (!data || data.length === 0) {
+
+      Swal.fire({
+        icon: "warning",
+        title: "Tidak Ada Data",
+        text: `Belum ada hasil perbandingan untuk tanggal ${tanggal}.`
+      });
+
+      return;
+
+    }
+
+
+    const excelData = data.map((item, index) => ({
+
+      No: index + 1,
+
+      PLU: item.master_barang?.plu,
+
+      "Nama Barang":
+        item.master_barang?.nama_barang,
+
+      Lokasi:
+        item.master_barang?.lokasi,
+
+      "Qty System":
+        item.qty_system,
+
+      "Qty Fisik":
+        item.qty_fisik,
+
+      Selisih:
+        item.selisih,
+
+      Petugas:
+        item.profiles?.nama,
+
+      Tanggal:
+        item.tanggal
+
+    }));
+
+
+    const worksheet =
+      XLSX.utils.json_to_sheet(excelData);
+
+
+    const workbook =
+      XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Hasil Stock Opname"
+    );
+
+
+    const excelBuffer =
+      XLSX.write(
+        workbook,
+        {
+          bookType: "xlsx",
+          type: "array"
+        }
+      );
+
+
+    const blob =
+      new Blob(
+        [excelBuffer],
+        {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+      );
+
+
+    saveAs(
+      blob,
+      `Hasil_Stock_Opname_${tanggal}.xlsx`
+    );
+
+  }
+
+
   async function loadDashboard() {
-
-
 
     const { count: total } =
       await dashboardService.getTotalBarang();
 
+
     const { count: so } =
       await dashboardService.getSudahSO(tanggal);
+
 
     const { data: users } =
       await dashboardService.getTotalPetugas(tanggal);
@@ -129,16 +248,27 @@ function Dashboard() {
 
     const { data: detail, error } =
       await dashboardService.getHasilBanding(tanggal);
+
+
     setTotalBarang(total);
 
     setSudahSO(so);
 
+
     setPetugas(
-      [...new Set(users.map(x => x.user_id))].length
+      [...new Set(
+        (users ?? []).map(x => x.user_id)
+      )].length
     );
+
+
     setRiwayat(detail ?? []);
+
   }
+
+
   return (
+
     <>
 
       <div className="dashboard-welcome">
@@ -162,6 +292,7 @@ function Dashboard() {
           icon={<Package size={20} />}
         />
 
+
         <StatCard
           title="Sudah Input"
           value={sudahSO}
@@ -169,12 +300,14 @@ function Dashboard() {
           icon={<ClipboardCheck size={20} />}
         />
 
+
         <StatCard
           title="Belum Input"
           value={totalBarang - sudahSO}
           variant="warning"
           icon={<Clock3 size={20} />}
         />
+
 
         <StatCard
           title="Petugas"
@@ -184,6 +317,8 @@ function Dashboard() {
         />
 
       </div>
+
+
       <div className="dashboard-filter">
 
         <div className="filter-left">
@@ -191,8 +326,11 @@ function Dashboard() {
           <input
             type="date"
             value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
+            onChange={(e) =>
+              setTanggal(e.target.value)
+            }
           />
+
 
           <button onClick={loadDashboard}>
             Tampilkan
@@ -200,7 +338,13 @@ function Dashboard() {
 
         </div>
 
-        <div style={{ display: "flex", gap: "10px" }}>
+
+        <div
+          style={{
+            display: "flex",
+            gap: "10px"
+          }}
+        >
 
           <button
             onClick={prosesBanding}
@@ -208,27 +352,33 @@ function Dashboard() {
             Proses Bandingkan
           </button>
 
-          <button className="export-btn">
+
+          <button
+            className="export-btn"
+            onClick={handleExport}
+          >
             Export Excel
           </button>
 
         </div>
 
       </div>
+
+
       <Card title="Hasil Perbandingan">
 
         <Table
-
           columns={columns}
-
           data={riwayat}
-
         />
 
       </Card>
 
     </>
+
   );
+
 }
+
 
 export default Dashboard;

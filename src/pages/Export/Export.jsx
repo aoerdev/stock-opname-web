@@ -36,15 +36,15 @@ function Export() {
 
             Lokasi: item.master_barang?.lokasi,
 
+            "Qty System": item.qty_system,
+
             "Qty Fisik": item.qty_fisik,
+
+            Selisih: item.selisih,
 
             Petugas: item.profiles?.nama,
 
-            Catatan: item.catatan,
-
-            Tanggal: item.tanggal,
-
-            Jam: new Date(item.created_at).toLocaleTimeString("id-ID")
+            Tanggal: item.tanggal
 
         }));
 

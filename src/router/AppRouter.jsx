@@ -6,7 +6,7 @@ import MasterBarang from "../pages/MasterBarang/MasterBarang";
 import StockOpname from "../pages/StockOpname/StockOpname";
 // import barang
 import ImportBarang from "../pages/ImportBarang/ImportBarang";
-
+import Users from "../pages/Users/Users";
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 
@@ -79,6 +79,16 @@ function AppRouter() {
             <ProtectedRoute>
               <MainLayout title="Export">
                 <Export />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-management"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Management User">
+                <Users />
               </MainLayout>
             </ProtectedRoute>
           }
