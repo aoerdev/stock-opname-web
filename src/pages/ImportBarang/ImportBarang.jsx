@@ -35,8 +35,8 @@ function ImportBarang() {
       accessor: "qty_system",
     },
   ];
-
   const handleFile = async (e) => {
+
     const file = e.target.files[0];
 
     if (!file) return;
@@ -44,15 +44,84 @@ function ImportBarang() {
     setFileName(file.name);
 
     try {
+
       const data = await readExcel(file);
+
+
+      // ==============================
+      // DEBUG DATA EXCEL
+      // ==============================
+
+      console.log(
+        "TOTAL DATA EXCEL:",
+        data.length
+      );
+
+
+      const pluCount = {};
+
+
+      data.forEach((item, index) => {
+
+        const plu =
+          String(item.plu).trim();
+
+
+        if (!pluCount[plu]) {
+
+          pluCount[plu] = [];
+
+        }
+
+
+        pluCount[plu].push({
+
+          index,
+
+          plu: item.plu,
+
+          nama: item.nama_barang,
+
+          lokasi: item.lokasi,
+
+          qty: item.qty_system
+
+        });
+
+      });
+
+
+      const duplicatePLU =
+        Object.entries(pluCount)
+          .filter(
+            ([plu, rows]) =>
+              rows.length > 1
+          );
+
+
+      console.log(
+        "DUPLICATE PLU:",
+        duplicatePLU
+      );
+
+
+      // ==============================
+      // SET PREVIEW
+      // ==============================
+
       setPreviewData(data);
+
+
     } catch {
+
       Swal.fire(
         "Error",
         "Gagal membaca file Excel.",
         "error"
       );
+
     }
+
   };
 
   const handleImport = async () => {
