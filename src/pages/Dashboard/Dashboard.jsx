@@ -414,7 +414,7 @@ function Dashboard() {
       <div className="dashboard-welcome">
 
         <h1>
-          Halo, AO'ER
+          Halo, {profile?.nama || profile?.username || "User"}
         </h1>
 
         <p>

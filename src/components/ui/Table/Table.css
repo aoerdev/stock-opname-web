@@ -1,51 +1,64 @@
 .table-wrapper {
-
     width: 100%;
-
-    overflow: auto;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
 
     border-radius: 14px;
-
     border: 1px solid #EEF2F7;
 
+    box-sizing: border-box;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
 }
+
+
+/* =========================
+   TABLE
+========================= */
 
 .table {
-
     width: 100%;
-
     border-collapse: collapse;
-
     background: #FFFFFF;
 
+    table-layout: auto;
 }
 
+
+/* =========================
+   HEADER
+========================= */
+
 .table thead {
-
     background: #F7FAF8;
-
 }
 
 .table th {
-
     padding: 18px 20px;
 
     text-align: left;
 
     font-size: 13px;
+    font-weight: 600;
 
     text-transform: uppercase;
-
     letter-spacing: .6px;
 
     color: #6B7280;
 
     border-bottom: 1px solid #E5E7EB;
 
+    white-space: nowrap;
 }
 
-.table td {
 
+/* =========================
+   BODY
+========================= */
+
+.table td {
     padding: 18px 20px;
 
     border-bottom: 1px solid #F3F4F6;
@@ -54,26 +67,96 @@
 
     font-size: 14px;
 
+    white-space: nowrap;
 }
 
 .table tbody tr {
-
     transition: .2s;
-
 }
 
 .table tbody tr:hover {
-
     background: #FAFFF8;
-
 }
 
-.table-empty {
 
+/* =========================
+   EMPTY
+========================= */
+
+.table-empty {
     text-align: center;
 
-    padding: 60px;
+    padding: 60px 20px;
 
     color: #9CA3AF;
+
+    white-space: normal;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+    .table-wrapper {
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        border-radius: 12px;
+
+        box-sizing: border-box;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+
+    .table {
+
+        /*
+         * Tabel boleh lebih lebar
+         * daripada layar HP.
+         *
+         * Yang scroll hanya
+         * .table-wrapper
+         */
+
+        width: max-content;
+        min-width: 600px;
+
+        table-layout: auto;
+    }
+
+
+    .table th {
+
+        padding: 12px 14px;
+
+        font-size: 11px;
+
+        white-space: nowrap;
+    }
+
+
+    .table td {
+
+        padding: 12px 14px;
+
+        font-size: 13px;
+
+        white-space: nowrap;
+    }
+
+
+    .table-empty {
+
+        padding: 40px 20px;
+
+        white-space: normal;
+    }
 
 }

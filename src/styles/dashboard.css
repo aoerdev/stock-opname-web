@@ -68,12 +68,56 @@
 
 }
 
-@media(max-width:768px) {
+@media (max-width: 768px) {
 
     .stats-grid {
-
         grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
 
+    .dashboard-welcome {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-welcome h1 {
+        font-size: 22px;
+    }
+
+    .dashboard-welcome p {
+        font-size: 14px;
+    }
+
+    .dashboard-filter {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin: 18px 0;
+    }
+
+    .filter-left {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+    }
+
+    .dashboard-filter input[type="date"] {
+        flex: 1;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .filter-left button {
+        white-space: nowrap;
+    }
+
+    .dashboard-filter>div:last-child {
+        width: 100%;
+        display: flex !important;
+    }
+
+    .dashboard-filter>div:last-child button {
+        flex: 1;
     }
 
 }

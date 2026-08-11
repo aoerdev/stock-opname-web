@@ -1,17 +1,31 @@
+import { useState } from "react";
+
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 
 import "../styles/layout.css";
 
 function MainLayout({ title, children }) {
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
+
     <div className="layout">
 
-      <Sidebar />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       <div className="main-content">
 
-        <Header title={title} />
+        <Header
+          title={title}
+          onMenuClick={() =>
+            setSidebarOpen(true)
+          }
+        />
 
         <div className="page-content">
 
@@ -21,8 +35,19 @@ function MainLayout({ title, children }) {
 
       </div>
 
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() =>
+            setSidebarOpen(false)
+          }
+        />
+      )}
+
     </div>
+
   );
+
 }
 
 export default MainLayout;

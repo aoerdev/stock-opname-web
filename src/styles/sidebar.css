@@ -89,3 +89,175 @@
 .logout-btn:hover {
     background: #FFECEC;
 }
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        width: 70px;
+        min-width: 70px;
+    }
+
+    .sidebar-logo {
+        padding: 20px 10px;
+        text-align: center;
+    }
+
+    .sidebar-logo h2 {
+        font-size: 16px;
+    }
+
+    .sidebar-menu {
+        padding: 12px 8px;
+    }
+
+    .menu {
+        justify-content: center;
+        padding: 14px 8px;
+    }
+
+    .menu span {
+        display: none;
+    }
+
+    .sidebar-footer {
+        padding: 12px 8px;
+    }
+
+    .logout-btn {
+        justify-content: center;
+        padding: 14px 8px;
+    }
+
+    .logout-btn span {
+        display: none;
+    }
+
+}
+
+.sidebar-close-btn {
+    display: none;
+}
+
+
+@media (max-width: 768px) {
+
+    .sidebar {
+
+        position: fixed;
+
+        top: 0;
+        left: 0;
+
+        width: 260px;
+        height: 100vh;
+
+        min-height: 100vh;
+
+        z-index: 1000;
+
+        transform: translateX(-100%);
+
+        transition: transform 0.25s ease;
+
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+
+    }
+
+
+    .sidebar.sidebar-open {
+
+        transform: translateX(0);
+
+    }
+
+
+    .sidebar-logo {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+    }
+
+
+    .sidebar-close-btn {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 38px;
+        height: 38px;
+
+        border: none;
+
+        background: transparent;
+
+        color: #374151;
+
+        cursor: pointer;
+
+        border-radius: 8px;
+
+    }
+
+
+    .sidebar-close-btn:hover {
+
+        background: #F3F4F6;
+
+    }
+
+
+    .sidebar-menu {
+
+        padding: 20px;
+
+    }
+
+
+    .menu {
+
+        justify-content: flex-start;
+
+    }
+
+
+    .menu span {
+
+        display: inline;
+
+    }
+
+
+    .logout-btn {
+
+        justify-content: flex-start;
+
+    }
+
+
+    .logout-btn span {
+
+        display: inline;
+
+    }
+
+
+    .sidebar-overlay {
+
+        position: fixed;
+
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.35);
+
+        z-index: 999;
+
+    }
+
+}

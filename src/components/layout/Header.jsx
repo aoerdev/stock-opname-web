@@ -1,21 +1,41 @@
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 
+import { Menu } from "lucide-react";
+
+import useAuth from "../../hooks/useAuth";
+
 import "../../styles/header.css";
 
 dayjs.locale("id");
 
-function Header({ title }) {
-  const today = dayjs().format("dddd, DD MMMM YYYY");
+function Header({ title, onMenuClick }) {
+
+  const { profile } = useAuth();
+
+  const today =
+    dayjs().format("dddd, DD MMMM YYYY");
+
 
   return (
+
     <header className="header">
 
       <div className="header-left">
 
-        <h2>{title}</h2>
+        <button
+          className="mobile-menu-btn"
+          onClick={onMenuClick}
+        >
+          <Menu size={24} />
+        </button>
+
+        <h2>
+          {title}
+        </h2>
 
       </div>
+
 
       <div className="header-right">
 
@@ -23,20 +43,33 @@ function Header({ title }) {
           {today}
         </div>
 
+
         <div className="header-user">
 
           <div className="avatar">
-            A
+
+            {profile?.nama
+              ?.charAt(0)
+              ?.toUpperCase() || "U"}
+
           </div>
+
 
           <div className="user-info">
 
             <span className="user-name">
-              Administrator
+
+              {profile?.nama ||
+                "User"}
+
             </span>
 
+
             <span className="user-role">
-              Admin
+
+              {profile?.role ||
+                "user"}
+
             </span>
 
           </div>
@@ -46,7 +79,9 @@ function Header({ title }) {
       </div>
 
     </header>
+
   );
+
 }
 
 export default Header;
