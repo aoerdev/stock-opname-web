@@ -166,10 +166,7 @@ function StockOpname() {
 
         const { data, error } =
             await stockOpnameService.getBarangBelumSO(
-
-                user.id,
                 tanggal
-
             );
 
 

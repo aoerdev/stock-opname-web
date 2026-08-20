@@ -2,7 +2,9 @@ import { supabase } from "../config/supabase";
 
 const stockOpnameService = {
 
+  // =========================
   // Cari berdasarkan PLU atau Nama Barang
+  // =========================
   async searchBarang(keyword) {
 
     return await supabase
@@ -15,7 +17,9 @@ const stockOpnameService = {
   },
 
 
+  // =========================
   // Ambil 1 barang berdasarkan PLU
+  // =========================
   async getBarangByPlu(plu) {
 
     return await supabase
@@ -26,6 +30,10 @@ const stockOpnameService = {
 
   },
 
+
+  // =========================
+  // Simpan / Update Stock Opname
+  // =========================
   async saveStockOpname(data) {
 
     console.log("DATA YANG DIKIRIM:", data);
@@ -45,19 +53,22 @@ const stockOpnameService = {
 
   },
 
-  // Riwayat Stock Opname Hari Ini
+
+  // =========================
+  // Riwayat Stock Opname user hari ini
+  // =========================
   async getTodayStockOpname(userId, tanggal) {
 
     return await supabase
       .from("stock_opname")
       .select(`
-                *,
-                master_barang (
-                    plu,
-                    nama_barang,
-                    lokasi
-                )
-            `)
+        *,
+        master_barang (
+          plu,
+          nama_barang,
+          lokasi
+        )
+      `)
       .eq("user_id", userId)
       .eq("tanggal", tanggal)
       .order("created_at", {
@@ -65,7 +76,13 @@ const stockOpnameService = {
       });
 
   },
-  async getBarangBelumSO(userId, tanggal) {
+
+
+  // =========================
+  // Ambil barang yang BELUM di-SO hari ini
+  // Patokan: barang sudah di-SO oleh SIAPA PUN
+  // =========================
+  async getBarangBelumSO(tanggal) {
 
     const { data: semuaBarang, error: barangError } =
       await supabase
@@ -73,6 +90,7 @@ const stockOpnameService = {
         .select("*")
         .eq("aktif", true)
         .order("nama_barang");
+
 
     if (barangError) {
 
@@ -84,11 +102,11 @@ const stockOpnameService = {
     }
 
 
+    // Ambil SEMUA barang yang sudah SO hari ini
     const { data: barangSO, error: soError } =
       await supabase
         .from("stock_opname")
         .select("master_barang_id")
-        .eq("user_id", userId)
         .eq("tanggal", tanggal);
 
 
@@ -102,18 +120,18 @@ const stockOpnameService = {
     }
 
 
-    const soIds =
-      new Set(
-        barangSO.map(
-          item => item.master_barang_id
-        )
-      );
+    // Jadikan ID barang yang sudah SO sebagai Set
+    const soIds = new Set(
+      barangSO.map(
+        item => item.master_barang_id
+      )
+    );
 
 
-    const belumSO =
-      semuaBarang.filter(
-        item => !soIds.has(item.id)
-      );
+    // Ambil hanya barang yang belum ada di stock_opname hari ini
+    const belumSO = semuaBarang.filter(
+      item => !soIds.has(item.id)
+    );
 
 
     return {
@@ -124,7 +142,10 @@ const stockOpnameService = {
   },
 
 
-  // Cek apakah barang sudah di-SO hari ini
+  // =========================
+  // Cek apakah barang sudah di-SO
+  // oleh user tersebut hari ini
+  // =========================
   async checkToday(masterBarangId, userId, tanggal) {
 
     return await supabase
@@ -138,7 +159,9 @@ const stockOpnameService = {
   },
 
 
+  // =========================
   // Total master barang aktif
+  // =========================
   async getTotalBarang() {
 
     return await supabase
@@ -152,7 +175,9 @@ const stockOpnameService = {
   },
 
 
+  // =========================
   // Total barang yang sudah SO hari ini
+  // =========================
   async getTotalSOHariIni(tanggal) {
 
     return await supabase
