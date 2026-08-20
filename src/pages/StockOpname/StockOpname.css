@@ -210,3 +210,42 @@
     font-weight: 600;
     color: #374151;
 }
+
+.search-action {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.search-action>*:first-child {
+    flex: 1;
+}
+
+.belum-so-btn {
+    background: #F59E0B;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.belum-so-btn:hover {
+    background: #D97706;
+}
+
+@media (max-width: 768px) {
+
+    .search-action {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .belum-so-btn {
+        width: 100%;
+    }
+
+}
